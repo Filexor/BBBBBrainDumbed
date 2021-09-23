@@ -2,6 +2,7 @@
 
 #include <string>
 #include <list>
+#include <stdexcept>
 
 using namespace std;
 
@@ -16,18 +17,18 @@ enum class $TokenType {
 	QuotedText,
 };
 
-enum class TokenError {
-	OK,
-	UnexpectedEndOfFile,
-	IllegalOperand,
-	ParenthesisDepthUnderrun,
+class TokenizerError : public runtime_error {
+public:
+	Token token;
+	TokenizerError(string message, Token _token) :runtime_error(message) {
+		token = _token;
+	}
 };
 
 class Token {
 public:
 	wstring token = L"";
 	$TokenType type = $TokenType::Default;
-	TokenError errorType = TokenError::OK;
 	wstring filename = L"";
 	basic_string<wchar_t>::size_type line = 0;
 	basic_string<wchar_t>::size_type digit = 0;
@@ -101,13 +102,13 @@ list<Token>* Tokenizer::tokenize(wstring input, wstring filename) {
 			parenthesisDepth--;
 			tmp.token.push_back(input[i]);
 			tmp.type = $TokenType::RightParenthesis;
-			if (parenthesisDepth < 0)
-			{
-				tmp.errorType = TokenError::ParenthesisDepthUnderrun;
-			}
 			tmp.filename = filename;
 			tmp.digit = digit;
 			tmp.line = line;
+			if (parenthesisDepth < 0)
+			{
+				throw TokenizerError("Parenthesis depth underrun", tmp);
+			}
 			i++;
 			digit++;
 			output->push_back(tmp);
@@ -358,7 +359,7 @@ list<Token>* Tokenizer::tokenize(wstring input, wstring filename) {
 			{
 				if (i >= input.length())
 				{
-					tmp.errorType = TokenError::UnexpectedEndOfFile;
+					throw TokenizerError("Unexpected end of file", tmp);
 					break;
 				}
 				if (input[i] == L'\\')
@@ -367,7 +368,7 @@ list<Token>* Tokenizer::tokenize(wstring input, wstring filename) {
 					digit++;
 					if (i >= input.length())
 					{
-						tmp.errorType = TokenError::UnexpectedEndOfFile;
+						throw TokenizerError("Unexpected end of file", tmp);
 						break;
 					}
 					if (input[i] == L'a')
@@ -572,7 +573,7 @@ list<Token>* Tokenizer::tokenize(wstring input, wstring filename) {
 			{
 				if (i >= input.length())
 				{
-					tmp.errorType = TokenError::UnexpectedEndOfFile;
+					throw TokenizerError("Unexpected end of file", tmp);
 					break;
 				}
 				if (input[i] == L'\\')
@@ -581,7 +582,7 @@ list<Token>* Tokenizer::tokenize(wstring input, wstring filename) {
 					digit++;
 					if (i >= input.length())
 					{
-						tmp.errorType = TokenError::UnexpectedEndOfFile;
+						throw TokenizerError("Unexpected end of file", tmp);
 						break;
 					}
 					if (input[i] == L'a')
