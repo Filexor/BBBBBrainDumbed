@@ -23,5 +23,11 @@
     <ClInclude Include="Tokenizer.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="Parser.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="instructions.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
