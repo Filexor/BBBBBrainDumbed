@@ -17,14 +17,6 @@ enum class $TokenType {
 	QuotedText,
 };
 
-class TokenizerError : public runtime_error {
-public:
-	Token token;
-	TokenizerError(string message, Token _token) :runtime_error(message) {
-		token = _token;
-	}
-};
-
 class Token {
 public:
 	wstring token = L"";
@@ -32,6 +24,14 @@ public:
 	wstring filename = L"";
 	basic_string<wchar_t>::size_type line = 0;
 	basic_string<wchar_t>::size_type digit = 0;
+};
+
+class TokenizerError : public runtime_error {
+public:
+	Token token;
+	TokenizerError(string message, Token _token) :runtime_error(message) {
+		token = _token;
+	}
 };
 
 class Tokenizer

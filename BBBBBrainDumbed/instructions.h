@@ -216,14 +216,14 @@ Instructions::Instructions()
 	inst.insert(make_pair(L"ldi.1 0", Instruction(126)));
 	inst.insert(make_pair(L"ldi.1 1", Instruction(127)));
 	
-	inst.insert(make_pair(L"A", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"B", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"D", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"E", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"F", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"G", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"K", Instruction(InstructionType::registername)));
-	inst.insert(make_pair(L"P", Instruction(InstructionType::registername)));
+	inst.insert(make_pair(L"A", Instruction(InstructionType::registername, 0)));
+	inst.insert(make_pair(L"B", Instruction(InstructionType::registername, 1)));
+	inst.insert(make_pair(L"D", Instruction(InstructionType::registername, 2)));
+	inst.insert(make_pair(L"E", Instruction(InstructionType::registername, 3)));
+	inst.insert(make_pair(L"F", Instruction(InstructionType::registername, 4)));
+	inst.insert(make_pair(L"G", Instruction(InstructionType::registername, 5)));
+	inst.insert(make_pair(L"K", Instruction(InstructionType::registername, 6)));
+	inst.insert(make_pair(L"P", Instruction(InstructionType::registername, 7)));
 
 	inst.insert(make_pair(L"binclude", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"define", Instruction(InstructionType::directive)));

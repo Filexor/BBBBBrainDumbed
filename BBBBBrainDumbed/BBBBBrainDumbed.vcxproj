@@ -142,7 +142,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="instructions.h" />
+    <ClInclude Include="Instructions.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Tokenizer.h" />
   </ItemGroup>
