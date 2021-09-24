@@ -146,6 +146,9 @@
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Tokenizer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="main.asm" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

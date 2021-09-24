@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <deque>
+#include <bitset>
 
 #include "Instructions.h"
 #include "Tokenizer.h"
@@ -28,7 +29,7 @@ public:
 	~Parser();
 	bool hasNumber(Token input);
 	bool isParsable(Token input);
-	int64_t toNumber();
+	int64_t toNumber(bool allowUnknown);
 	list<Token>::iterator peekToken();
 	list<Token>::iterator getToken();
 	bool isUnary(list<Token>::iterator begin);
@@ -68,7 +69,7 @@ inline bool Parser::isParsable(Token input)
 	return hasNumber(input) || input.type == $TokenType::LeftParenthesis || input.type == $TokenType::Operator;
 }
 
-inline int64_t Parser::toNumber()
+inline int64_t Parser::toNumber(bool allowUnknown)
 {
 	auto j = i->token;
 	auto k = insts.inst.find(j);
@@ -77,6 +78,10 @@ inline int64_t Parser::toNumber()
 		if (k->second.itype == InstructionType::knownnumber)
 		{
 			return k->second.value;
+		}
+		else if (k->second.itype == InstructionType::unknownnumber && allowUnknown)
+		{
+			return 0;
 		}
 		else
 		{
@@ -128,7 +133,8 @@ inline int64_t Parser::toNumber()
 	}
 	else
 	{
-		throw ParserError("not a number", *i);
+		//throw ParserError("not a number", *i);
+		insts.inst.insert(make_pair(j, Instruction(InstructionType::unknownnumber)));
 	}
 	return 0;
 }
@@ -199,9 +205,9 @@ inline int64_t Parser::parse_unary(list<Token>::iterator begin, bool allowUnknow
 		getToken();
 		value = !parse_unary(begin, allowUnknown);
 	}
-	else if (hasNumber(*i) && !allowUnknown)
+	else if (hasNumber(*i))
 	{
-		value = toNumber();
+		value = toNumber(allowUnknown);
 	}
 	else if (allowUnknown)
 	{
@@ -217,7 +223,8 @@ inline int64_t Parser::parse_unary(list<Token>::iterator begin, bool allowUnknow
 inline int64_t Parser::parse_main(list<Token>::iterator begin, int64_t lhs, int64_t precedence, bool allowUnknown)
 {
 	list<Token>::iterator j = peekToken();
-	while ((j) != input->end() && (j->token != L")") && insts.inst.find((j)->token)->second.itype == InstructionType::$operator && insts.inst.find((j)->token)->second.value >= precedence)
+	auto k = insts.inst.find((j)->token);
+	while ((j) != input->end() && (j->token != L")") && k != insts.inst.end() && k->second.itype == InstructionType::$operator && k->second.value >= precedence)
 	{
 		Token op = *j;
 		getToken();
@@ -368,6 +375,34 @@ inline vector<bool> Parser::parse()
 					output.push_back(j->second.opcode.test(k));
 				}
 			}
+			else if (j->second.itype == InstructionType::mnemonic_expect_number)
+			{
+				TBR.push_back(make_pair(output.size(), i));
+				i++;
+				if (!isParsable(*i))
+				{
+					throw ParserError("parsable token expacted", *i);
+				}
+				parse_init(true);
+				for (size_t k = 0; k < 7 ; k++)
+				{
+					output.push_back(false);
+				}
+			}
+			else if (j->second.itype == InstructionType::mnemonic_expect_registername)
+			{
+				i++;
+				auto k = insts.inst.find((*i).token);
+				if (k->second.itype != InstructionType::registername)
+				{
+					throw ParserError("register name expacted", *i);
+				}
+				bitset<7> l = j->second.opcode | k->second.opcode;
+				for (size_t m = 0; m < j->second.opcode.size(); m++)
+				{
+					output.push_back(j->second.opcode.test(m));
+				}
+			}
 			else if (j->second.itype == InstructionType::directive)
 			{
 				if (j->first == L"binclude")	//format: binclude filename [offset] [size]
@@ -466,6 +501,7 @@ inline vector<bool> Parser::parse()
 		{
 			auto k = TBR[j].second;
 			k++;
+			i = k;
 			int64_t l = parse_init(false);
 			l &= 0xffff;
 			uint8_t m0, m1, m2, m3;
@@ -479,6 +515,36 @@ inline vector<bool> Parser::parse()
 				output[TBR[j].first + n + 7] = (m1 >> n) & 1;
 				output[TBR[j].first + n + 7 * 2] = (m2 >> n) & 1;
 				output[TBR[j].first + n + 7 * 3] = (m3 >> n) & 1;
+			}
+		}
+		else if (TBR[j].second->token == L"ldi.4")
+		{
+			auto k = TBR[j].second;
+			k++;
+			i = k;
+			int64_t l = parse_init(false);
+			l &= 0xf;
+			bitset<7> n = l;
+			uint8_t m0;
+			m0 = (n | insts.inst.find(TBR[j].second->token)->second.opcode).to_ullong();
+			for (size_t n = 0; n < 7; n++)
+			{
+				output[TBR[j].first + n] = (m0 >> n) & 1;
+			}
+		}
+		else if (TBR[j].second->token == L"ldi.1")
+		{
+			auto k = TBR[j].second;
+			k++;
+			i = k;
+			int64_t l = parse_init(false);
+			l &= 0x1;
+			bitset<7> n = l;
+			uint8_t m0;
+			m0 = (n | insts.inst.find(TBR[j].second->token)->second.opcode).to_ullong();
+			for (size_t n = 0; n < 7; n++)
+			{
+				output[TBR[j].first + n] = (m0 >> n) & 1;
 			}
 		}
 	}

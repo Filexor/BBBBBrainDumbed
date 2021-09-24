@@ -31,6 +31,7 @@ public:
 	int64_t value;
 	Associativity atype;
 	Instruction(uint8_t _opcode);
+	Instruction(uint8_t _opcode, InstructionType _itype);
 	Instruction(InstructionType _itype);
 	Instruction(InstructionType _itype, int64_t _value);
 	Instruction(InstructionType _itype, int64_t _value, Associativity _atype);
@@ -44,6 +45,14 @@ Instruction::Instruction(uint8_t _opcode)
 {
 	opcode = _opcode;
 	itype = InstructionType::mnemonic;
+	value = 0;
+	atype = Associativity::left_associative;
+}
+
+inline Instruction::Instruction(uint8_t _opcode, InstructionType _itype)
+{
+	opcode = _opcode;
+	itype = _itype;
 	value = 0;
 	atype = Associativity::left_associative;
 }
@@ -218,24 +227,25 @@ Instructions::Instructions()
 	inst.insert(make_pair(L"ldi.1 0", Instruction(126)));
 	inst.insert(make_pair(L"ldi.1 1", Instruction(127)));
 	
-	inst.insert(make_pair(L"op1", Instruction(InstructionType::mnemonic_expect_registername)));
-	inst.insert(make_pair(L"op2", Instruction(InstructionType::mnemonic_expect_registername)));
+	inst.insert(make_pair(L"op1", Instruction(0, InstructionType::mnemonic_expect_registername)));
+	inst.insert(make_pair(L"op2", Instruction(8, InstructionType::mnemonic_expect_registername)));
 
-	inst.insert(make_pair(L"ldi.4", Instruction(InstructionType::mnemonic_expect_number)));
-	inst.insert(make_pair(L"ldi.1", Instruction(InstructionType::mnemonic_expect_number)));
+	inst.insert(make_pair(L"ldi.4", Instruction(64, InstructionType::mnemonic_expect_number)));
+	inst.insert(make_pair(L"ldi.1", Instruction(126, InstructionType::mnemonic_expect_number)));
 
-	inst.insert(make_pair(L"A", Instruction(InstructionType::registername, 0)));
-	inst.insert(make_pair(L"B", Instruction(InstructionType::registername, 1)));
-	inst.insert(make_pair(L"D", Instruction(InstructionType::registername, 2)));
-	inst.insert(make_pair(L"E", Instruction(InstructionType::registername, 3)));
-	inst.insert(make_pair(L"F", Instruction(InstructionType::registername, 4)));
-	inst.insert(make_pair(L"G", Instruction(InstructionType::registername, 5)));
-	inst.insert(make_pair(L"K", Instruction(InstructionType::registername, 6)));
-	inst.insert(make_pair(L"P", Instruction(InstructionType::registername, 7)));
+	inst.insert(make_pair(L"a", Instruction(0, InstructionType::registername)));
+	inst.insert(make_pair(L"b", Instruction(1, InstructionType::registername)));
+	inst.insert(make_pair(L"d", Instruction(2, InstructionType::registername)));
+	inst.insert(make_pair(L"e", Instruction(3, InstructionType::registername)));
+	inst.insert(make_pair(L"f", Instruction(4, InstructionType::registername)));
+	inst.insert(make_pair(L"g", Instruction(5, InstructionType::registername)));
+	inst.insert(make_pair(L"k", Instruction(6, InstructionType::registername)));
+	inst.insert(make_pair(L"p", Instruction(7, InstructionType::registername)));
 
 	inst.insert(make_pair(L"binclude", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"define", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"equ", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"ldi.16", Instruction(InstructionType::directive)));
 
 	inst.insert(make_pair(L"+", Instruction(InstructionType::$operator, 11)));	//add, pos(13)
 	inst.insert(make_pair(L"-", Instruction(InstructionType::$operator, 11)));	//sub, neg(13)
