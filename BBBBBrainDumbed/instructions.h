@@ -8,6 +8,8 @@ using namespace std;
 enum class InstructionType
 {
 	mnemonic,
+	mnemonic_expect_number,
+	mnemonic_expect_registername,
 	registername,
 	directive,
 	$operator,
@@ -216,6 +218,12 @@ Instructions::Instructions()
 	inst.insert(make_pair(L"ldi.1 0", Instruction(126)));
 	inst.insert(make_pair(L"ldi.1 1", Instruction(127)));
 	
+	inst.insert(make_pair(L"op1", Instruction(InstructionType::mnemonic_expect_registername)));
+	inst.insert(make_pair(L"op2", Instruction(InstructionType::mnemonic_expect_registername)));
+
+	inst.insert(make_pair(L"ldi.4", Instruction(InstructionType::mnemonic_expect_number)));
+	inst.insert(make_pair(L"ldi.1", Instruction(InstructionType::mnemonic_expect_number)));
+
 	inst.insert(make_pair(L"A", Instruction(InstructionType::registername, 0)));
 	inst.insert(make_pair(L"B", Instruction(InstructionType::registername, 1)));
 	inst.insert(make_pair(L"D", Instruction(InstructionType::registername, 2)));

@@ -39,7 +39,7 @@ class Tokenizer
 public:
 	Tokenizer();
 	~Tokenizer();
-	list<Token>* tokenize(wstring input, wstring filename);
+	static list<Token>* tokenize(wstring input, wstring filename);
 private:
 
 };

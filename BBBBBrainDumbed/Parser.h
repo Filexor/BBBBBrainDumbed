@@ -24,7 +24,7 @@ public:
 	Instructions insts;
 	list<Token>* input;
 	list<Token>::iterator i;
-	Parser();
+	Parser(list<Token>* _input);
 	~Parser();
 	bool hasNumber(Token input);
 	bool isParsable(Token input);
@@ -40,8 +40,9 @@ private:
 
 };
 
-Parser::Parser()
+Parser::Parser(list<Token>* _input)
 {
+	input = _input;
 }
 
 Parser::~Parser()
