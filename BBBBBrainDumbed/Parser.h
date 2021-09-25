@@ -50,7 +50,7 @@ Parser::~Parser()
 {
 }
 
-inline bool Parser::hasNumber(Token input)
+bool Parser::hasNumber(Token input)
 {
 	/*
 		followings has number: binary(start with 0b), quaternary(start with 0q), octal(start with 0o or 0), decimal(no prefix or start with 0d), hexadecimal(start with 0x), quoted text(surrounded by ' or "), identifier(enything else without end with :), label(enything else with end with :)
@@ -64,12 +64,12 @@ inline bool Parser::hasNumber(Token input)
 	return true;
 }
 
-inline bool Parser::isParsable(Token input)
+bool Parser::isParsable(Token input)
 {
 	return hasNumber(input) || input.type == $TokenType::LeftParenthesis || input.type == $TokenType::Operator;
 }
 
-inline int64_t Parser::toNumber(bool allowUnknown)
+int64_t Parser::toNumber(bool allowUnknown)
 {
 	auto j = i->token;
 	auto k = insts.inst.find(j);
@@ -139,19 +139,19 @@ inline int64_t Parser::toNumber(bool allowUnknown)
 	return 0;
 }
 
-inline list<Token>::iterator Parser::peekToken()
+list<Token>::iterator Parser::peekToken()
 {
 	auto j = ++i;
 	--i;
 	return j;
 }
 
-inline list<Token>::iterator Parser::getToken()
+list<Token>::iterator Parser::getToken()
 {
 	return ++i;
 }
 
-inline bool Parser::isUnary(list<Token>::iterator begin)
+bool Parser::isUnary(list<Token>::iterator begin)
 {
 	bool output = false;
 	if (i == begin)
@@ -172,7 +172,7 @@ inline bool Parser::isUnary(list<Token>::iterator begin)
 	return output;
 }
 
-inline int64_t Parser::parse_unary(list<Token>::iterator begin, bool allowUnknown)
+int64_t Parser::parse_unary(list<Token>::iterator begin, bool allowUnknown)
 {
 	int64_t value = 0;
 	if (i->token == L"(")
@@ -220,7 +220,7 @@ inline int64_t Parser::parse_unary(list<Token>::iterator begin, bool allowUnknow
 	return value;
 }
 
-inline int64_t Parser::parse_main(list<Token>::iterator begin, int64_t lhs, int64_t precedence, bool allowUnknown)
+int64_t Parser::parse_main(list<Token>::iterator begin, int64_t lhs, int64_t precedence, bool allowUnknown)
 {
 	list<Token>::iterator j = peekToken();
 	auto k = insts.inst.find((j)->token);
@@ -323,12 +323,12 @@ inline int64_t Parser::parse_main(list<Token>::iterator begin, int64_t lhs, int6
 	return lhs;
 }
 
-inline int64_t Parser::parse_init(bool allowUnknown)
+int64_t Parser::parse_init(bool allowUnknown)
 {
 	return parse_main(i, parse_unary(i, allowUnknown), 0, allowUnknown);
 }
 
-inline vector<bool> Parser::parse()
+vector<bool> Parser::parse()
 {
 	vector<bool> output;
 	vector<pair<size_t, list<Token>::iterator>> TBR;	//to be resolved. <binary position, directive>

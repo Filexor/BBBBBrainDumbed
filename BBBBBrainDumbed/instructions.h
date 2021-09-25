@@ -49,7 +49,7 @@ Instruction::Instruction(uint8_t _opcode)
 	atype = Associativity::left_associative;
 }
 
-inline Instruction::Instruction(uint8_t _opcode, InstructionType _itype)
+Instruction::Instruction(uint8_t _opcode, InstructionType _itype)
 {
 	opcode = _opcode;
 	itype = _itype;

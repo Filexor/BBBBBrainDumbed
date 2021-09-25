@@ -29,6 +29,9 @@
     <ClInclude Include="Instructions.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="BBBBBrainDumbed.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.asm">
