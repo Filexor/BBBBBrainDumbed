@@ -714,7 +714,7 @@ size_t BBBBBrainDumbed::execute(size_t count, bool isInit)
 		case 58:	//adc.16
 			T1 = rotr(*OP1, I);
 			T2 = rotr(*OP2, I);
-			T3 = (T1 & 0x1) + (T2 & 0x1) + C;
+			T3 = T1 + T2 + C;
 			T1 = T3 & 0xffff;
 			C = (T3 >> 16) & 0x1;
 			*OP1 = rotl(T1, I);
@@ -725,7 +725,7 @@ size_t BBBBBrainDumbed::execute(size_t count, bool isInit)
 		case 59:
 			T1 = rotr(*OP1, I);
 			T2 = rotr(*OP2, I);
-			T3 = (T1 & 0x1) - (T2 & 0x1) - C;
+			T3 = T1 - T2 - C;
 			T1 = T3 & 0xffff;
 			C = (T3 >> 16) & 0x1;
 			*OP1 = rotl(T1, I);

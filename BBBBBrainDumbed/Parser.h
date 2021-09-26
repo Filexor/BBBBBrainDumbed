@@ -397,10 +397,10 @@ vector<bool> Parser::parse()
 				{
 					throw ParserError("register name expacted", *i);
 				}
-				bitset<7> l = j->second.opcode | k->second.opcode;
+				uint8_t l = (uint8_t)(j->second.opcode.to_ullong() | k->second.opcode.to_ullong());
 				for (size_t m = 0; m < j->second.opcode.size(); m++)
 				{
-					output.push_back(j->second.opcode.test(m));
+					output.push_back((l >> m) & 0x1);
 				}
 			}
 			else if (j->second.itype == InstructionType::directive)

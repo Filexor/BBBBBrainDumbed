@@ -2,6 +2,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <Windows.h>
+
 #include "Parser.h"
 #include "BBBBBrainDumbed.h"
 
@@ -46,7 +48,16 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
 	}
 	BBBBBrainDumbed b;
 	b.memory.bakeRom(ROM);
-	b.execute(10000000, true);
+	LARGE_INTEGER qpc0, qpc1, qpf;
+	QueryPerformanceFrequency(&qpf);
+	QueryPerformanceCounter(&qpc0);
+	for (size_t i = 0; i < 6000; i++)
+	{
+		b.P = 0;
+		b.execute(117314, false);
+	}
+	QueryPerformanceCounter(&qpc1);
 	wcout << L"P=" << b.P << endl;
+	wcout << (double)(qpc1.QuadPart - qpc0.QuadPart) / qpf.QuadPart << endl;
 	return 0;
 }
