@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Parser.h"
+#include "BBBBBrainDumbed.h"
 
 using namespace std;
 
@@ -43,5 +44,9 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
 		wcout << L"Parser error\n" << e.what() << endl;
 		return 4;
 	}
+	BBBBBrainDumbed b;
+	b.memory.bakeRom(ROM);
+	b.execute(10000000, true);
+	wcout << L"P=" << b.P << endl;
 	return 0;
 }

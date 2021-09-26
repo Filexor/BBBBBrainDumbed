@@ -9,4 +9,4 @@ ldi.16 loop op1 E
 loop:
 op2 A ldri.16 op2 B str.16
 op2 A mov.16 op2 D clc sbb.16
-op2 F bn
+op2 F bn nop

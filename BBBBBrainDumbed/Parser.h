@@ -526,7 +526,7 @@ vector<bool> Parser::parse()
 			l &= 0xf;
 			bitset<7> n = l;
 			uint8_t m0;
-			m0 = (n | insts.inst.find(TBR[j].second->token)->second.opcode).to_ullong();
+			m0 = (uint8_t)(n | insts.inst.find(TBR[j].second->token)->second.opcode).to_ullong();
 			for (size_t n = 0; n < 7; n++)
 			{
 				output[TBR[j].first + n] = (m0 >> n) & 1;
@@ -541,7 +541,7 @@ vector<bool> Parser::parse()
 			l &= 0x1;
 			bitset<7> n = l;
 			uint8_t m0;
-			m0 = (n | insts.inst.find(TBR[j].second->token)->second.opcode).to_ullong();
+			m0 = (uint8_t)(n | insts.inst.find(TBR[j].second->token)->second.opcode).to_ullong();
 			for (size_t n = 0; n < 7; n++)
 			{
 				output[TBR[j].first + n] = (m0 >> n) & 1;
