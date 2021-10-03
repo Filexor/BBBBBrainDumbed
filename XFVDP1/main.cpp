@@ -3,12 +3,18 @@
 
 void disp()
 {
-	glClearColor(0, 0, 0, 0);
+	glClearColor(1, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 LRESULT CALLBACK WindowProcedure(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
 {
+    HDC hdc;
+    HGLRC hglrc;
+    PIXELFORMATDESCRIPTOR pfd = { sizeof(PIXELFORMATDESCRIPTOR), 1, PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER, PFD_TYPE_RGBA, 24 };
+    pfd.iLayerType = PFD_MAIN_PLANE;
+    int iCpf;
+    BOOL bRet;
     switch (uMsg)
     {
     case WM_CLOSE:
@@ -16,6 +22,34 @@ LRESULT CALLBACK WindowProcedure(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wPa
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
+        break;
+    case WM_PAINT:
+        hdc = GetDC(hwnd);
+        iCpf = ChoosePixelFormat(hdc, &pfd);
+        if (iCpf == 0)
+        {
+            PostQuitMessage(GetLastError());
+        }
+        bRet = SetPixelFormat(hdc, iCpf, &pfd);
+        if (bRet == FALSE)
+        {
+            PostQuitMessage(GetLastError());
+        }
+        hglrc = wglCreateContext(hdc);
+        if (!hglrc)
+        {
+            PostQuitMessage(GetLastError());
+            break;
+        }
+        bRet = wglMakeCurrent(hdc, hglrc);
+        if (bRet == FALSE)
+        {
+            PostQuitMessage(GetLastError());
+        }
+        disp();
+        SwapBuffers(hdc);
+        wglMakeCurrent(NULL, NULL);
+        wglDeleteContext(hglrc);
         break;
     default:
         return DefWindowProcW(hwnd, uMsg, wParam, lParam);
