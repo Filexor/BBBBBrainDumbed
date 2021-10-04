@@ -1,11 +1,54 @@
 #include <Windows.h>
+#include <KHR/khrplatform.h>
 #include <gl/GL.h>
+#include <gl/GLU.h>
+
+#ifndef GL_GLEXT_PROTOTYPES
+#define GL_GLEXT_PROTOTYPES
+#endif // !GL_GLEXT_PROTOTYPES
+#include <gl/glext.h>
+
+/*void (APIENTRY* glGenBuffers)(GLsizei n, GLuint* buffers);
+void (APIENTRY *glBindBuffer)(GLenum target, GLuint buffer);
+void (APIENTRY *glBufferData)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);*/
+
+GLfloat vertData[] = {
+    0.0,0.0,
+    0.5,1.0,
+    1.0,0.0
+};
 
 void disp()
 {
+    GLuint vbo = 0;
 	glClearColor(1, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), vertData, GL_STATIC_DRAW);
 }
+
+HCURSOR hcArrow;
+
+/*bool initGL()
+{
+    glGenBuffers = (void(APIENTRY *)(GLsizei n, GLuint* arrays))wglGetProcAddress("glGenBuffers");
+    if (!glGenBuffers)
+    {
+        return false;
+    }
+    glBindBuffer = (void(APIENTRY *)(GLenum target, GLuint buffer))wglGetProcAddress("glGenBuffers");
+    if (!glBindBuffer)
+    {
+        return false;
+    }
+    glBufferData = (void(APIENTRY *)(GLenum target, GLsizeiptr size, const void* data, GLenum usage))wglGetProcAddress("glBufferData");
+    if (!glBufferData)
+    {
+        return false;
+    }
+    return true;
+}*/
 
 LRESULT CALLBACK WindowProcedure(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
 {
@@ -46,10 +89,15 @@ LRESULT CALLBACK WindowProcedure(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wPa
         {
             PostQuitMessage(GetLastError());
         }
+        /*if (!initGL())
+        {
+            return GetLastError();
+        }*/
         disp();
         SwapBuffers(hdc);
         wglMakeCurrent(NULL, NULL);
         wglDeleteContext(hglrc);
+        ReleaseDC(hwnd, hdc);
         break;
     default:
         return DefWindowProcW(hwnd, uMsg, wParam, lParam);
@@ -63,6 +111,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     MSG msg;
     WNDCLASSEXW wc;
     HWND hwndMain;
+    hcArrow = LoadCursor(hInstance, IDC_ARROW);
     if (!hPrevInstance)
     {
         wc.cbSize = sizeof(WNDCLASSEXW);
@@ -72,7 +121,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         wc.cbWndExtra = 0;
         wc.hInstance = hInstance;
         wc.hIcon = NULL;
-        wc.hCursor = LoadCursor(hInstance, IDC_ARROW);
+        wc.hCursor = hcArrow;
         wc.hbrBackground = NULL;
         wc.lpszMenuName = NULL;
         wc.lpszClassName = L"MainWindowClass";
