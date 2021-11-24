@@ -644,8 +644,16 @@ size_t BBBBBrainDumbed::execute(size_t count, bool isInit)
 		case 47:	//divs.4
 			T1 = (((int8_t)rotr(*OP1, I)) << 4) >> 4;
 			T2 = (((int8_t)rotr(*OP2, I)) << 4) >> 4;
-			L = (int16_t)T1 / (int16_t)T2;
-			H = (int16_t)T1 % (int16_t)T2;
+			if (T2 == 0)
+			{
+				L = 0;
+				H = 0;
+			}
+			else
+			{
+				L = (int16_t)T1 / (int16_t)T2;
+				H = (int16_t)T1 % (int16_t)T2;
+			}
 			tick += 31;
 			inst_count++;
 			checkIRQ();
@@ -753,11 +761,19 @@ size_t BBBBBrainDumbed::execute(size_t count, bool isInit)
 			inst_count++;
 			checkIRQ();
 			break;
-		case 62:
+		case 62:	//div.16
 			T1 = rotr(*OP1, I);
 			T2 = rotr(*OP2, I);
-			L = T1 / T2;
-			H = T1 % T2;
+			if (T2 == 0)
+			{
+				L = 0;
+				H = 0;
+			}
+			else
+			{
+				L = T1 / T2;
+				H = T1 % T2;
+			}
 			tick += 31;
 			inst_count++;
 			checkIRQ();
@@ -1173,13 +1189,15 @@ size_t BBBBBrainDumbed::execute(size_t count, bool isInit)
 			inst_count++;
 			checkIRQ();
 			break;
-		case 124:
-			tick += 29;
+		case 124:	//wait.4
+			T1 = rotr(*OP1, I) & 0xf;
+			tick += (29 + T1);
 			inst_count++;
 			checkIRQ();
 			break;
-		case 125:
-			tick += 29;
+		case 125:	//wait.4e
+			T1 = rotr(*OP1, I) & 0xf;
+			tick += (29 + T1 + 16);
 			inst_count++;
 			checkIRQ();
 			break;

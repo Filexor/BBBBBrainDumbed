@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <list>
+#include <map>
 #include <stdexcept>
 #include <fstream>
 #include <deque>
@@ -11,7 +12,16 @@
 
 using namespace std;
 
-class ParserError : public runtime_error {
+class Macro
+{
+public:
+	vector<Token> args;
+	list<Token> body;
+	Instructions insts;
+};
+
+class ParserError : public runtime_error
+{
 public:
 	Token token;
 	ParserError(string message, Token _token) :runtime_error(message) {
@@ -25,7 +35,10 @@ public:
 	Instructions insts;
 	list<Token>* input;
 	list<Token>::iterator i;
-	Parser(list<Token>* _input);
+	vector<wstring> fileHierarchy;
+	map<wstring, Macro> macros;
+	vector<wstring> macroHierarchy;
+	Parser(list<Token>* _input, wstring _filename);
 	~Parser();
 	bool hasNumber(Token input);
 	bool isParsable(Token input);
@@ -36,14 +49,21 @@ public:
 	int64_t parse_unary(list<Token>::iterator begin, bool allowUnknown);
 	int64_t parse_main(list<Token>::iterator begin, int64_t lhs, int64_t precedence, bool allowUnknown);
 	int64_t parse_init(bool allowUnknown);
+	bool checkDependencyCycleAndAssign(vector<wstring>* Hierarchy, wstring name);
 	vector<bool> parse();
 private:
 
 };
 
-Parser::Parser(list<Token>* _input)
+Parser::Parser(list<Token>* _input, wstring _filename)
 {
 	input = _input;
+	wchar_t* fullpath = _wfullpath(NULL, _filename.c_str(), _MAX_PATH);
+	if (!fullpath)
+	{
+		throw runtime_error("invalid path");
+	}
+	fileHierarchy.push_back(wstring(fullpath));
 }
 
 Parser::~Parser()
@@ -328,6 +348,19 @@ int64_t Parser::parse_init(bool allowUnknown)
 	return parse_main(i, parse_unary(i, allowUnknown), 0, allowUnknown);
 }
 
+bool Parser::checkDependencyCycleAndAssign(vector<wstring>* Hierarchy, wstring name)
+{
+	for (size_t i = 0; i < Hierarchy->size(); i++)
+	{
+		if ((*Hierarchy)[i].compare(name))
+		{
+			return false;
+		}
+	}
+	Hierarchy->push_back(name);
+	return true;
+}
+
 vector<bool> Parser::parse()
 {
 	vector<bool> output;
@@ -459,6 +492,42 @@ vector<bool> Parser::parse()
 						output.push_back(binput[k]);
 					}
 				}
+				else if (j->first == L"include")	//format: include filename
+				{
+					i++;
+					if (i->type != $TokenType::QuotedText)
+					{
+						throw ParserError("file name must be quoted", *i);
+					}
+					wstring filepath = (*i).token;
+					wchar_t* fullpath = _wfullpath(NULL, filepath.c_str(), _MAX_PATH);
+					if (!fullpath)
+					{
+						throw ParserError("invalid path", *i);
+					}
+					if (!checkDependencyCycleAndAssign(&fileHierarchy, wstring(fullpath)))
+					{
+						throw ParserError("file dependency cycle detected", *i);
+					}
+					basic_ifstream<wchar_t> ifs;
+					ifs.open(filepath, ios_base::binary | ios_base::in);
+					if (ifs.fail())
+					{
+						throw ParserError("failed to open file", *i);
+					}
+					istreambuf_iterator<wchar_t> ifsbegin(ifs), ifsend;
+					wstring finput(ifsbegin, ifsend);
+					ifs.close();
+					list<Token>* token = Tokenizer::tokenize(finput, filepath);
+					i++;
+					auto k = --(token->end());
+					Token eof = *k;
+					eof.token = L" endoffile";
+					eof.type = $TokenType::Genetated;
+					input->insert(i, eof);
+					input->insert(i, token->begin(), token->end());
+
+				}
 				else if (j->first == L"define")
 				{
 					auto k = ++i;
@@ -470,12 +539,55 @@ vector<bool> Parser::parse()
 					int64_t l = parse_init(false);
 					if (insts.inst.find((*k).token) == insts.inst.end() || insts.inst.find((*k).token)->second.itype == InstructionType::knownnumber || insts.inst.find((*k).token)->second.itype == InstructionType::unknownnumber)
 					{
-						insts.inst.insert_or_assign((*k).token, Instruction(InstructionType::knownnumber, l));
+						insts.inst.insert_or_assign(k->token, Instruction(InstructionType::knownnumber, l));
 					}
 					else
 					{
 						throw ParserError("keyword cannot be used", *k);
 					}
+				}
+				else if (j->first == L"macro")	//format: macro identifier [(argument ...)] endmacro
+				{
+					Macro macro = Macro();
+					i++;
+					auto l = i;
+					if (!checkDependencyCycleAndAssign(&macroHierarchy, i->token))
+					{
+						throw ParserError("macro dependency cycle detected", *i);
+					}
+					insts.inst.insert_or_assign(i->token, Instruction(InstructionType::macro));
+					if (macroHierarchy.size() <= 1)
+					{
+						macro.insts = insts;
+					}
+					else
+					{
+						auto k = macroHierarchy.end();
+						k--;
+						k--;
+						macro.insts = macros.find(*k)->second.insts;
+					}
+					i++;
+					if (i->type == $TokenType::LeftParenthesis)
+					{
+						i++;
+						while (i->type != $TokenType::RightParenthesis)
+						{
+							if (macro.insts.inst.find(i->token) != macro.insts.inst.end())
+							{
+								throw ParserError("identfier of the argument is already taken", *i);
+							}
+							macro.args.push_back(*i);
+							i++;
+						}
+						i++;
+					}
+					while (i->token != L"endmacro")
+					{
+						macro.body.push_back(*i);
+						i++;
+					}
+					macros.insert_or_assign(l->token, macro);
 				}
 				else if (j->first == L"ldi.16")	//accepts label as value. format: ldi value
 				{
@@ -491,6 +603,59 @@ vector<bool> Parser::parse()
 						output.push_back(false);
 					}
 				}
+			}
+			else if (j->second.itype == InstructionType::macro)	//format: identifier [ ['('] argument [')'] ...]
+			{
+				auto k_ = macros.find(i->token);
+				if (k_ == macros.end())
+				{
+					throw ParserError("the macro does not found", *i);
+				}
+				auto k = k_->second;
+				i++;
+				size_t l = 0;
+				while (l < k.args.size())
+				{
+					list<Token> replaceList;
+					size_t parenthesisDepth = 0;
+					if (i->type == $TokenType::LeftParenthesis)
+					{
+						i++;
+						parenthesisDepth++;
+						while (i->type != $TokenType::RightParenthesis && parenthesisDepth <= 1)
+						{
+							if (i->type != $TokenType::LeftParenthesis)
+							{
+								parenthesisDepth++;
+							}
+							else if (i->type != $TokenType::RightParenthesis)
+							{
+								parenthesisDepth--;
+							}
+							replaceList.push_back(*i);
+							i++;
+						}
+						i++;
+					}
+					auto m = k.body.begin();
+					while (m != k.body.end())
+					{
+						m = find_if(m, k.body.end(), [&](Token o) {return o.token == k.args[l].token; });
+						m = k.body.erase(m);
+						k.body.insert(m, replaceList.begin(), replaceList.end());
+						for (size_t p = 0; p < replaceList.size(); p++)
+						{
+							m++;
+						}
+					}
+					i++;
+					l++;
+				}
+				i = input->insert(i, k.body.begin(), k.body.end());
+			}
+			else if (j->second.itype == InstructionType::endoffile)
+			{
+				fileHierarchy.pop_back();
 			}
 		}
 		i++;

@@ -31,7 +31,7 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
 	ifs.close();
 	list<Token>* tokens = Tokenizer::tokenize(finput, filepath);
 	vector<bool> ROM;
-	Parser parser(tokens);
+	Parser parser(tokens, filepath);
 	try
 	{
 		ROM = parser.parse();
@@ -54,7 +54,7 @@ int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
 	for (size_t i = 0; i < 6000; i++)
 	{
 		b.P = 0;
-		b.execute(117314, false);
+		b.execute(6105, false);
 	}
 	QueryPerformanceCounter(&qpc1);
 	wcout << L"P=" << b.P << endl;

@@ -14,7 +14,9 @@ enum class InstructionType
 	directive,
 	$operator,
 	unknownnumber,
-	knownnumber
+	knownnumber,
+	macro,
+	endoffile
 };
 
 enum class Associativity
@@ -222,8 +224,8 @@ Instructions::Instructions()
 	inst.insert(make_pair(L"bzr", Instruction(121)));
 	inst.insert(make_pair(L"bn", Instruction(122)));
 	inst.insert(make_pair(L"bnr", Instruction(123)));
-	//inst.insert(make_pair(L"", Instruction(124)));
-	//inst.insert(make_pair(L"", Instruction(125)));
+	inst.insert(make_pair(L"wait.4", Instruction(124)));
+	inst.insert(make_pair(L"wait.4e", Instruction(125)));
 	inst.insert(make_pair(L"ldi.1 0", Instruction(126)));
 	inst.insert(make_pair(L"ldi.1 1", Instruction(127)));
 	
@@ -244,8 +246,12 @@ Instructions::Instructions()
 
 	inst.insert(make_pair(L"binclude", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"define", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"endmacro", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"equ", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"ldi.16", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"include", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"macro", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"repeat", Instruction(InstructionType::directive)));
 
 	inst.insert(make_pair(L"+", Instruction(InstructionType::$operator, 11)));	//add, pos(13)
 	inst.insert(make_pair(L"-", Instruction(InstructionType::$operator, 11)));	//sub, neg(13)
@@ -271,6 +277,8 @@ Instructions::Instructions()
 	inst.insert(make_pair(L"==", Instruction(InstructionType::$operator, 8)));	//bool equal
 	inst.insert(make_pair(L"!=", Instruction(InstructionType::$operator, 8)));	//bool not equal
 	inst.insert(make_pair(L",", Instruction(InstructionType::$operator, 1)));	//bool not equal
+
+	inst.insert(make_pair(L" endoffile", Instruction(InstructionType::endoffile)));
 }
 
 Instructions::~Instructions()

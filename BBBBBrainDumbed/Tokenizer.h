@@ -15,6 +15,7 @@ enum class $TokenType {
 	RightParenthesis,
 	Operator,
 	QuotedText,
+	Genetated,
 };
 
 class Token {
