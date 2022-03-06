@@ -246,6 +246,8 @@ Instructions::Instructions()
 
 	inst.insert(make_pair(L"binclude", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"define", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"ed", Instruction(InstructionType::directive)));
+	inst.insert(make_pair(L"enddata", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"endmacro", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"equ", Instruction(InstructionType::directive)));
 	inst.insert(make_pair(L"ldi.16", Instruction(InstructionType::directive)));

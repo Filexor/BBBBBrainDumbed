@@ -446,7 +446,7 @@ vector<bool> Parser::parse()
 						throw ParserError("file name must be quoted", *i);
 					}
 					wstring filepath = (*i).token;
-					size_t size = 0, offset = 0;
+					int64_t size = 0, offset = 0;
 					i++;
 					if (isParsable(*i))
 					{
@@ -589,6 +589,29 @@ vector<bool> Parser::parse()
 					}
 					macros.insert_or_assign(l->token, macro);
 				}
+				else if (j->first == L"ed")	//format: ed size(0<n<=64) data (...) enddata
+				{
+					TBR.push_back(make_pair(output.size(), i));
+					i++;
+					int64_t size;
+					if (!isParsable(*i))
+					{
+						throw ParserError("parsable token expacted", *i);
+					}
+					size = parse_init(false);
+					if (size > 64 || size <= 0)
+					{
+						throw ParserError("data size too small or too large\nsize must be in 0 < size <= 64", *i);
+					}
+					while (i->token != L"enddata")
+					{
+						parse_init(true);
+						for (size_t k = 0; k < size; k++)
+						{
+							output.push_back(false);
+						}
+					}
+				}
 				else if (j->first == L"ldi.16")	//accepts label as value. format: ldi value
 				{
 					TBR.push_back(make_pair(output.size(), i));
@@ -662,6 +685,22 @@ vector<bool> Parser::parse()
 	}
 	for (size_t j = 0; j < TBR.size(); j++)
 	{
+		if (TBR[j].second->token == L"ed")
+		{
+			auto k = TBR[j].second;
+			k++;
+			i = k;
+			int64_t size = parse_init(false);
+			while (i->token != L"enddata")
+			{
+				int64_t l = parse_init(false);
+				for (size_t k = 0; k < size; k++)
+				{
+					output.push_back(l & 1);
+					l >>= 1;
+				}
+			}
+		}
 		if (TBR[j].second->token == L"ldi.16")
 		{
 			auto k = TBR[j].second;

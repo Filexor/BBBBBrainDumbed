@@ -1,18 +1,20 @@
 #include <Windows.h>
 #include <KHR/khrplatform.h>
 #include <gl/GL.h>
-#include <gl/GLU.h>
 
-#ifndef GL_GLEXT_PROTOTYPES
+/*#ifndef GL_GLEXT_PROTOTYPES
 #define GL_GLEXT_PROTOTYPES
-#endif // !GL_GLEXT_PROTOTYPES
+#endif // !GL_GLEXT_PROTOTYPES*/
 #include <gl/glext.h>
 
-/*void (APIENTRY* glGenBuffers)(GLsizei n, GLuint* buffers);
-void (APIENTRY *glBindBuffer)(GLenum target, GLuint buffer);
-void (APIENTRY *glBufferData)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);*/
+void (APIENTRY* glGenBuffers)(GLsizei n, GLuint* buffers);
+void (APIENTRY* glBindBuffer)(GLenum target, GLuint buffer);
+void (APIENTRY* glBufferData)(GLenum target, GLsizeiptr size, const void* data, GLenum usage);
+void (APIENTRY* glEnableVertexAttribArray)(GLuint index);
+void (APIENTRY* glVertexAttribPointer)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer);
+void (APIENTRY* glDisableVertexAttribArray)(GLuint index);
 
-GLfloat vertData[] = {
+static const GLfloat vertData[] = {
     0.0,0.0,
     0.5,1.0,
     1.0,0.0
@@ -25,19 +27,25 @@ void disp()
 	glClear(GL_COLOR_BUFFER_BIT);
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), vertData, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(GLfloat), vertData, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)NULL);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDisableVertexAttribArray(0);
 }
 
 HCURSOR hcArrow;
 
-/*bool initGL()
+bool initGL()
 {
     glGenBuffers = (void(APIENTRY *)(GLsizei n, GLuint* arrays))wglGetProcAddress("glGenBuffers");
     if (!glGenBuffers)
     {
         return false;
     }
-    glBindBuffer = (void(APIENTRY *)(GLenum target, GLuint buffer))wglGetProcAddress("glGenBuffers");
+    glBindBuffer = (void(APIENTRY *)(GLenum target, GLuint buffer))wglGetProcAddress("glBindBuffer");
     if (!glBindBuffer)
     {
         return false;
@@ -47,8 +55,23 @@ HCURSOR hcArrow;
     {
         return false;
     }
+    glEnableVertexAttribArray = (void(APIENTRY*)(GLuint index))wglGetProcAddress("glEnableVertexAttribArray");
+    if (!glEnableVertexAttribArray)
+    {
+        return false;
+    }
+    glVertexAttribPointer = (void(APIENTRY*)(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void* pointer))wglGetProcAddress("glVertexAttribPointer");
+    if (!glVertexAttribPointer)
+    {
+        return false;
+    }
+    glDisableVertexAttribArray = (void(APIENTRY*)(GLuint index))wglGetProcAddress("glDisableVertexAttribArray");
+    if (!glDisableVertexAttribArray)
+    {
+        return false;
+    }
     return true;
-}*/
+}
 
 LRESULT CALLBACK WindowProcedure(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam)
 {
@@ -89,10 +112,10 @@ LRESULT CALLBACK WindowProcedure(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wPa
         {
             PostQuitMessage(GetLastError());
         }
-        /*if (!initGL())
+        if (!initGL())
         {
-            return GetLastError();
-        }*/
+            PostQuitMessage(GetLastError());
+        }
         disp();
         SwapBuffers(hdc);
         wglMakeCurrent(NULL, NULL);

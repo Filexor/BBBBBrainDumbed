@@ -12,8 +12,9 @@ class Memory
 public:
 	bitset<0x8000> ROM;
 	bitset<0x4000> RAM;
-	bitset<0x17> VRAM;
-	bitset<0x5> ARAM;
+	bitset<0x2000> NVRAM;
+	bitset<0x100> VREG;
+	bitset<0x5> AREG;
 	bitset<0x5> controllerInput0;
 	bitset<0x5> controllerInput1;
 	Memory();
@@ -56,23 +57,23 @@ void Memory::bakeRom(vector<bool> input)
 uint16_t Memory::mapAddress(uint16_t input)
 {
 	uint16_t output = input;
-	if (input >= 0xc020 && input <= 0xdfff)
+	if (input >= 0xe100 && input <= 0xefff)	//VREG
 	{
 		//1100 0000 0001 1111
 		//1101 1111 1111 1111
-		output = input & 0xc01f;
+		output = input & 0xe0ff;
 	}
-	else if (input >= 0xe008 && input <= 0xefff)
+	else if (input >= 0xf008 && input <= 0xf7ff)	//AREG
 	{
 		//1110 0000 0000 0111
 		//1110 1111 1111 1111
-		output = input & 0xe007;
+		output = input & 0xf007;
 	}
-	else if (input >= 0xf010 && input <= 0xf7ff)
+	else if (input >= 0xf810 && input <= 0xffff)	//Peripheral
 	{
 		//1111 0000 0000 1111
 		//1111 0111 1111 1111
-		output = input & 0xf00f;
+		output = input & 0xf80f;
 	}
 	return output;
 }
@@ -88,33 +89,33 @@ bool Memory::read(uint16_t address)
 	{
 		return RAM[i - 0x8000];
 	}
-	else if (i <= 0xc016)
-	{
-		return VRAM[i - 0xc000];
-	}
 	else if (i <= 0xdfff)
 	{
-		return true;
-	}
-	else if (i <= 0xe004)
-	{
-		return ARAM[i - 0xe000];
+		return NVRAM[i - 0xc000];
 	}
 	else if (i <= 0xefff)
 	{
-		return true;
+		return VREG[i - 0xe000];
 	}
 	else if (i <= 0xf004)
 	{
-		return controllerInput0[i - 0xf000];
+		return AREG[i - 0xf000];
 	}
-	else if (i <= 0xf007)
+	else if (i <= 0xf7ff)
 	{
 		return true;
 	}
-	else if (i <= 0xf00c)
+	else if (i <= 0xf800)
 	{
-		return controllerInput1[i - 0xf008];
+		return controllerInput0[i - 0xf800];
+	}
+	else if (i <= 0xf807)
+	{
+		return true;
+	}
+	else if (i <= 0xf80c)
+	{
+		return controllerInput1[i - 0xf808];
 	}
 	else
 	{
@@ -165,7 +166,7 @@ void Memory::write(uint16_t address, bool value)
 	}
 	else if (i <= 0xc016)
 	{
-		VRAM[i - 0xc000] = value;
+		VREG[i - 0xc000] = value;
 	}
 	else if (i <= 0xdfff)
 	{
@@ -173,7 +174,7 @@ void Memory::write(uint16_t address, bool value)
 	}
 	else if (i <= 0xe004)
 	{
-		ARAM[i - 0xe000] = value;
+		AREG[i - 0xe000] = value;
 	}
 	else if (i <= 0xefff)
 	{
