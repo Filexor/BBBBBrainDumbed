@@ -352,7 +352,7 @@ bool Parser::checkDependencyCycleAndAssign(vector<wstring>* Hierarchy, wstring n
 {
 	for (size_t i = 0; i < Hierarchy->size(); i++)
 	{
-		if ((*Hierarchy)[i].compare(name))
+		if (!(*Hierarchy)[i].compare(name))
 		{
 			return false;
 		}

@@ -1192,13 +1192,13 @@ size_t BBBBBrainDumbed::execute(size_t count, bool isInit)
 			break;
 		case 124:	//wait.4
 			T1 = rotr(*OP1, I) & 0xf;
-			tick += (29 + T1);
+			tick += (30 + T1);
 			inst_count++;
 			checkIRQ();
 			break;
 		case 125:	//wait.4e
 			T1 = rotr(*OP1, I) & 0xf;
-			tick += (29 + T1 + 16);
+			tick += (30 + T1 + 16);
 			inst_count++;
 			checkIRQ();
 			break;
