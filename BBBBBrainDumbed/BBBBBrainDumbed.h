@@ -5,6 +5,12 @@
 #include <vector>
 #include <stdexcept>
 
+#ifdef __clang__
+#define rotr _rotr
+#define rotl _rotl
+#endif // __clang__
+
+
 using namespace std;
 
 class Memory

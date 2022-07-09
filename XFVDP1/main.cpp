@@ -124,9 +124,8 @@ int OpenAssembly(LPWSTR file)
         bbbbbraindumbed->execute(71, false);
     }
     QueryPerformanceCounter(&qpc1);
-    wcout << L"P=" << bbbbbraindumbed->P << endl;
-    wcout << (double)(qpc1.QuadPart - qpc0.QuadPart) / qpf.QuadPart << endl;
     OutputDebugStringW(to_wstring((double)(qpc1.QuadPart - qpc0.QuadPart) / qpf.QuadPart).c_str());
+    return 0;
 }
 
 HCURSOR hcArrow;

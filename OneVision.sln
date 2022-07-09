@@ -5,7 +5,15 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BBBBBrainDumbed", "BBBBBrainDumbed\BBBBBrainDumbed.vcxproj", "{D2903B9E-603D-446B-A77D-6F523680CEA8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XFVDP1", "XFVDP1\XFVDP1.vcxproj", "{3105A71E-797B-4762-95F9-67733800EE90}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OneVision", "XFVDP1\XFVDP1.vcxproj", "{3105A71E-797B-4762-95F9-67733800EE90}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XFVDP1SUPER", "XFVDP1SUPER\XFVDP1SUPER.vcxproj", "{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32421FB9-DE43-4E6B-821F-CB1DEA338AE8}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\File_x\メモ\FantasyConsole\CPU\BBBBBrainDumbed.ods = ..\..\File_x\メモ\FantasyConsole\CPU\BBBBBrainDumbed.ods
+		Documentation\XFVDP1ULTRA.ods = Documentation\XFVDP1ULTRA.ods
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +39,14 @@ Global
 		{3105A71E-797B-4762-95F9-67733800EE90}.Release|x64.Build.0 = Release|x64
 		{3105A71E-797B-4762-95F9-67733800EE90}.Release|x86.ActiveCfg = Release|Win32
 		{3105A71E-797B-4762-95F9-67733800EE90}.Release|x86.Build.0 = Release|Win32
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Debug|x64.ActiveCfg = Debug|x64
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Debug|x64.Build.0 = Debug|x64
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Debug|x86.ActiveCfg = Debug|Win32
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Debug|x86.Build.0 = Debug|Win32
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Release|x64.ActiveCfg = Release|x64
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Release|x64.Build.0 = Release|x64
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Release|x86.ActiveCfg = Release|Win32
+		{D4954B60-EF5F-41B7-A3B1-7FAD6E61F18F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
