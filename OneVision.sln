@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XFVDP1SUPER", "XFVDP1SUPER\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32421FB9-DE43-4E6B-821F-CB1DEA338AE8}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\File_x\メモ\FantasyConsole\CPU\BBBBBrainDumbed.ods = ..\..\File_x\メモ\FantasyConsole\CPU\BBBBBrainDumbed.ods
+		Documentation\BBBBBrainDumbed.ods = Documentation\BBBBBrainDumbed.ods
 		Documentation\XFVDP1ULTRA.ods = Documentation\XFVDP1ULTRA.ods
 	EndProjectSection
 EndProject
