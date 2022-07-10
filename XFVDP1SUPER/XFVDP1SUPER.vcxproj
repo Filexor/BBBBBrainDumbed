@@ -24,6 +24,7 @@
     <ProjectGuid>{d4954b60-ef5f-41b7-a3b1-7fad6e61f18f}</ProjectGuid>
     <RootNamespace>XFVDP1SUPER</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>XFVDP1ULTRA</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
